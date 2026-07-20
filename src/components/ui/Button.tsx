@@ -1,18 +1,22 @@
-import type { ReactNode } from "react";
+import type {
+  ReactNode,
+  ButtonHTMLAttributes,
+} from "react";
 
-type ButtonProps = {
-  children: ReactNode;
-  onClick?: () => void;
-};
+type ButtonProps =
+  ButtonHTMLAttributes<HTMLButtonElement> & {
+    children: ReactNode;
+  };
 
 export default function Button({
   children,
-  onClick,
+  className = "",
+  ...props
 }: ButtonProps) {
   return (
     <button
-      onClick={onClick}
-      className="
+      {...props}
+      className={`
         rounded-lg
         bg-black
         px-5
@@ -20,9 +24,12 @@ export default function Button({
         text-sm
         font-medium
         text-white
-        hover:bg-gray-800
         transition
-      "
+        hover:bg-gray-800
+        disabled:opacity-50
+        disabled:cursor-not-allowed
+        ${className}
+      `}
     >
       {children}
     </button>

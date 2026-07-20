@@ -1,16 +1,47 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const items = [
-  "Dashboard",
-  "Clientes",
-  "Conversaciones",
-  "Agentes IA",
-  "Productos",
-  "Ventas",
-  "Configuración",
+  {
+    label: "🏠 Dashboard",
+    to: "/",
+  },
+  {
+    label: "👥 Clientes",
+    to: "/clientes",
+  },
+  {
+    label: "🤖 Prospector IA",
+    to: "/prospeccion",
+  },
+  {
+    label: "💬 Conversaciones",
+    to: "/conversaciones",
+  },
+  {
+    label: "🧠 Agentes IA",
+    to: "/agentes",
+  },
+  {
+    label: "📦 Productos",
+    to: "/productos",
+  },
+  {
+    label: "💰 Ventas",
+    to: "/ventas",
+  },
+  {
+    label: "📥 Bandeja IA",
+    to: "/bandeja",
+  },
+  {
+    label: "⚙️ Configuración",
+    to: "/configuracion",
+  },
 ];
 
 export default function Sidebar() {
+  const location = useLocation();
+
   return (
     <aside
       className="
@@ -21,17 +52,15 @@ export default function Sidebar() {
         p-6
       "
     >
-
       <div
         className="
           mb-10
-          text-xl
+          text-2xl
           font-bold
         "
       >
         🚀 SalesIA
       </div>
-
 
       <nav
         className="
@@ -40,33 +69,20 @@ export default function Sidebar() {
           gap-2
         "
       >
-
         {items.map((item) => (
-
           <Link
-            key={item}
-            to="/"
-            className="
-              rounded-lg
-              px-4
-              py-3
-              text-sm
-              text-slate-200
-              transition
-              hover:bg-slate-800
-              hover:text-white
-            "
+            key={item.to}
+            to={item.to}
+            className={`rounded-lg px-4 py-3 text-sm transition ${
+              location.pathname === item.to
+                ? "bg-slate-700 text-white"
+                : "text-slate-300 hover:bg-slate-800 hover:text-white"
+            }`}
           >
-            {item}
-
+            {item.label}
           </Link>
-
         ))}
-
-
       </nav>
-
-
     </aside>
   );
 }

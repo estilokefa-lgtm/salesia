@@ -6,6 +6,10 @@ import DashboardPage from "../modules/dashboard/DashboardPage";
 import ClientesPage from "../modules/clientes/ClientesPage";
 import ProductosPage from "../modules/productos/ProductosPage";
 import VentasPage from "../modules/ventas/VentasPage";
+import ProspeccionPage from "../modules/prospeccion/ProspeccionPage";
+import AgenteComercialPage from "../modules/agentes/AgenteComercialPage";
+import AgentesPage from "../modules/agentes/AgentesPage";
+import BandejaIAPage from "../modules/bandeja/BandejaIAPage";
 
 
 export default function AppRouter() {
@@ -42,6 +46,19 @@ export default function AppRouter() {
             path="/ventas"
             element={<VentasPage />}
           />
+          <Route path="/prospeccion" element={<ProspeccionPage />} />
+          <Route
+  path="/agentes/comercial"
+  element={<AgenteComercialPage />}
+/>
+<Route
+  path="/agentes"
+  element={<AgentesPage />}
+/>
+<Route
+  path="/bandeja"
+  element={<BandejaIAPage />}
+/>
 
 
         </Route>

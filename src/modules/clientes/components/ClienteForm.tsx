@@ -1,132 +1,143 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Input from "../../../components/ui/Input";
 import Button from "../../../components/ui/Button";
+import type { Cliente } from "../types";
+import Select from "../../../components/ui/Select";
+import Textarea from "../../../components/ui/Textarea";
 
-
-type Cliente = {
-  nombre: string;
-  empresa: string;
-  email: string;
-  telefono: string;
-};
 
 
 type Props = {
+  cliente?: Cliente | null;
   onSave: (cliente: Cliente) => void;
 };
 
-
 export default function ClienteForm({
+  cliente,
   onSave,
 }: Props) {
-
-
-  const [cliente, setCliente] = useState<Cliente>({
+  const [form, setForm] = useState<Cliente>({
     nombre: "",
     empresa: "",
     email: "",
     telefono: "",
+    estado: "Prospecto",
+    interes: "",
+    origen: "WhatsApp",
+    observaciones: "",
   });
 
+  useEffect(() => {
+    if (cliente) {
+      setForm(cliente);
+    } else {
+      setForm({
+        nombre: "",
+        empresa: "",
+        email: "",
+        telefono: "",
+      });
+    }
+  }, [cliente]);
 
-
-  const actualizar = (
+  function actualizar(
     campo: keyof Cliente,
     valor: string
-  ) => {
-
-    setCliente({
-      ...cliente,
+  ) {
+    setForm((anterior) => ({
+      ...anterior,
       [campo]: valor,
-    });
+    }));
+  }
 
-  };
+  function guardar() {
+    onSave(form);
 
-
+    if (!cliente) {
+      setForm({
+        nombre: "",
+        empresa: "",
+        email: "",
+        telefono: "",
+      });
+    }
+  }
 
   return (
-
-    <div className="
-      flex
-      flex-col
-      gap-4
-    ">
-
-
+    <div className="flex flex-col gap-4">
       <Input
         label="Nombre"
+        value={form.nombre}
         placeholder="Nombre del cliente"
-        value={cliente.nombre}
-        onChange={(e)=>
-          actualizar(
-            "nombre",
-            e.target.value
-          )
-        }
+        onChange={(e) => actualizar("nombre", e.target.value)}
       />
-
 
       <Input
         label="Empresa"
+        value={form.empresa}
         placeholder="Empresa"
-        value={cliente.empresa}
-        onChange={(e)=>
-          actualizar(
-            "empresa",
-            e.target.value
-          )
-        }
+        onChange={(e) => actualizar("empresa", e.target.value)}
       />
-
 
       <Input
         label="Email"
+        value={form.email}
         placeholder="correo@empresa.com"
-        value={cliente.email}
-        onChange={(e)=>
-          actualizar(
-            "email",
-            e.target.value
-          )
-        }
+        onChange={(e) => actualizar("email", e.target.value)}
       />
-
 
       <Input
         label="Teléfono"
+        value={form.telefono}
         placeholder="Número"
-        value={cliente.telefono}
-        onChange={(e)=>
-          actualizar(
-            "telefono",
-            e.target.value
-          )
-        }
+        onChange={(e) => actualizar("telefono", e.target.value)}
       />
+      <Select
+  label="Estado"
+  value={form.estado}
+  onChange={(e) => actualizar("estado", e.target.value)}
+  options={[
+    { value: "Prospecto", label: "Prospecto" },
+    { value: "Contactado", label: "Contactado" },
+    { value: "Negociación", label: "Negociación" },
+    { value: "Cliente", label: "Cliente" },
+    { value: "Perdido", label: "Perdido" },
+  ]}
+/>
 
+<Input
+  label="Interés"
+  placeholder="¿Qué busca el cliente?"
+  value={form.interes ?? ""}
+  onChange={(e) => actualizar("interes", e.target.value)}
+/>
 
+<Select
+  label="Origen"
+  value={form.origen}
+  onChange={(e) => actualizar("origen", e.target.value)}
+  options={[
+    { value: "WhatsApp", label: "WhatsApp" },
+    { value: "Instagram", label: "Instagram" },
+    { value: "Facebook", label: "Facebook" },
+    { value: "Web", label: "Web" },
+    { value: "Referido", label: "Referido" },
+    { value: "Llamada", label: "Llamada" },
+    { value: "Otro", label: "Otro" },
+  ]}
+/>
 
-      <Button
-        onClick={()=>{
-          onSave(cliente);
+<Textarea
+  label="Observaciones"
+  rows={4}
+  value={form.observaciones ?? ""}
+  onChange={(e) => actualizar("observaciones", e.target.value)}
+/>
 
-          setCliente({
-            nombre:"",
-            empresa:"",
-            email:"",
-            telefono:"",
-          });
-
-        }}
-      >
-        Guardar cliente
+      <Button onClick={guardar}>
+        {cliente ? "Actualizar cliente" : "Guardar cliente"}
       </Button>
-
-
-
     </div>
-
   );
-
 }
