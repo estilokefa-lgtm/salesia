@@ -10,6 +10,7 @@ import { crearTareaIA } from "./services/tareasService.js";
 import tareasRouter from "./routes/tareasRouter.js";
 import vendedorRoutes from "./routes/vendedorRoutes.js";
 import orquestadorRoutes from "./routes/orquestadorRoutes.js";
+import {completarTareaIA,} from "./services/tareasService.js";
 
 
 dotenv.config();
