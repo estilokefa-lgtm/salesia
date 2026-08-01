@@ -50,17 +50,17 @@ export async function crearTareaIA(tarea) {
       tareaGuardar.agente
     );
 
-    if (existente) {
-      console.log(
-        "Ya existe una tarea pendiente para este cliente y agente:",
-        existente.id
-      );
-    
-      return {
-        tarea: existente,
-        creada: false,
-      };
-    }
+  if (existente) {
+    console.log(
+      "Ya existe una tarea pendiente para este cliente y agente:",
+      existente.id
+    );
+
+    return {
+      tarea: existente,
+      creada: false,
+    };
+  }
 
   const { data, error } = await supabase
     .from("ia_tareas")
@@ -234,4 +234,132 @@ export async function eliminarTareaIA(id) {
   }
 
   return true;
+}
+
+export async function actualizarTareaIA(
+  id,
+  cambios = {}
+) {
+  if (!id) {
+    throw new Error(
+      "El id de la tarea es obligatorio"
+    );
+  }
+
+  const cambiosPermitidos = {};
+
+  if (cambios.agente !== undefined)
+    cambiosPermitidos.agente =
+      cambios.agente;
+
+  if (cambios.tipo !== undefined)
+    cambiosPermitidos.tipo =
+      cambios.tipo;
+
+  if (cambios.titulo !== undefined)
+    cambiosPermitidos.titulo =
+      cambios.titulo;
+
+  if (cambios.descripcion !== undefined)
+    cambiosPermitidos.descripcion =
+      cambios.descripcion;
+
+  if (cambios.prioridad !== undefined)
+    cambiosPermitidos.prioridad =
+      cambios.prioridad;
+
+  if (cambios.estado !== undefined)
+    cambiosPermitidos.estado =
+      cambios.estado;
+
+  if (cambios.accion !== undefined)
+    cambiosPermitidos.accion =
+      cambios.accion;
+
+  if (cambios.ruta !== undefined)
+    cambiosPermitidos.ruta =
+      cambios.ruta;
+
+  if (cambios.responsable !== undefined)
+    cambiosPermitidos.responsable =
+      cambios.responsable;
+
+  if (cambios.payload !== undefined)
+    cambiosPermitidos.payload =
+      cambios.payload;
+
+  if (
+    Object.keys(cambiosPermitidos)
+      .length === 0
+  ) {
+    throw new Error(
+      "No se informaron cambios para actualizar la tarea"
+    );
+  }
+
+  const { data, error } = await supabase
+    .from("ia_tareas")
+    .update(cambiosPermitidos)
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error(
+      "Error actualizando tarea IA:",
+      error
+    );
+
+    throw new Error(
+      "No se pudo actualizar la tarea IA"
+    );
+  }
+
+  return data;
+}
+export async function obtenerClientesConTareasActivas(
+  clientesIds = []
+) {
+  if (
+    !Array.isArray(clientesIds) ||
+    clientesIds.length === 0
+  ) {
+    return new Set();
+  }
+
+  const { data, error } =
+    await supabase
+      .from("ia_tareas")
+      .select("cliente_id")
+      .in(
+        "cliente_id",
+        clientesIds
+      )
+      .in("estado", [
+        "Pendiente",
+        "En proceso",
+      ])
+      .not(
+        "cliente_id",
+        "is",
+        null
+      );
+
+  if (error) {
+    console.error(
+      "Error buscando clientes con tareas activas:",
+      error
+    );
+
+    throw new Error(
+      "No se pudieron consultar las tareas activas"
+    );
+  }
+
+  return new Set(
+    (data ?? []).map(
+      (tarea) =>
+        Number(tarea.cliente_id)
+    )
+  );
 }

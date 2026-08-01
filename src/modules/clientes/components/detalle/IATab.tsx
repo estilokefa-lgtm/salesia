@@ -219,6 +219,10 @@ async function cargarHistorial() {
         alert(
           "El Agente Vendedor analizó al cliente y creó una tarea en la Bandeja IA."
         );
+      } else if (data.tarea_existente) {
+        alert(
+          "El Agente Vendedor analizó al cliente, pero ya existe una tarea pendiente en la Bandeja IA."
+        );
       } else {
         alert(
           data.mensaje ||

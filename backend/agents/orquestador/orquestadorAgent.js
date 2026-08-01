@@ -13,6 +13,10 @@ import {
   import {
     obtenerMemoriaCliente,
   } from "../../services/memoriaIAService.js";
+
+  import {
+    obtenerClientesConTareasActivas,
+  } from "../../services/tareasService.js";
   
   
   async function obtenerMemoriasClientes(
@@ -71,7 +75,84 @@ import {
       prioridad === "media"
     );
   }
+  function normalizarTexto(
+    valor
+  ) {
+    return (
+      valor
+        ?.toString()
+        .trim()
+        .toLowerCase() || ""
+    );
+  }
   
+  
+  function determinarAgenteDestino({
+    cliente,
+    oportunidad,
+    historial = [],
+  }) {
+    const estado =
+      normalizarTexto(
+        cliente?.estado
+      );
+  
+    const pipeline =
+      normalizarTexto(
+        cliente?.pipeline
+      );
+  
+    const prioridad =
+      normalizarTexto(
+        oportunidad?.prioridad
+      );
+  
+    const score =
+      Number(
+        oportunidad?.score ||
+        cliente?.score ||
+        0
+      );
+  
+    const tieneHistorial =
+      historial.length > 0;
+  
+    const estadosAvanzados = [
+      "calificado",
+      "interesado",
+      "oportunidad",
+      "presupuesto",
+      "presupuestado",
+      "negociacion",
+      "negociación",
+      "seguimiento",
+    ];
+  
+    const clienteAvanzado =
+      estadosAvanzados.some(
+        (valor) =>
+          estado.includes(valor) ||
+          pipeline.includes(valor)
+      );
+  
+    const oportunidadPrioritaria =
+      prioridad === "alta" ||
+      prioridad === "media";
+  
+    if (
+      oportunidadPrioritaria &&
+      score >= 70 &&
+      (
+        clienteAvanzado ||
+        tieneHistorial ||
+        score >= 80
+      )
+    ) {
+      return "Vendedor";
+    }
+  
+    return "Comercial";
+  }
   
   export async function ejecutarOrquestador({
     limite = 100,
@@ -87,12 +168,14 @@ import {
       "Iniciando análisis de cartera..."
     );
   
-    const clientes =
-      await obtenerClientesParaAnalisis({
-        limite,
-      });
+    const clientesRecuperados =
+    await obtenerClientesParaAnalisis({
+      limite,
+    });
   
-    if (clientes.length === 0) {
+  if (
+    clientesRecuperados.length === 0
+  ) {
       return {
         ok: true,
   
@@ -124,9 +207,86 @@ import {
       };
     }
   
-    console.log(
-      `Clientes recuperados: ${clientes.length}`
-    );
+   
+    
+    const clientesConTareaActiva =
+  await obtenerClientesConTareasActivas(
+    clientesRecuperados
+      .map((cliente) =>
+        Number(cliente.id)
+      )
+      .filter(Boolean)
+  );
+
+const clientes =
+  clientesRecuperados.filter(
+    (cliente) =>
+      !clientesConTareaActiva.has(
+        Number(cliente.id)
+      )
+  );
+
+const clientesOmitidos =
+  clientesRecuperados.length -
+  clientes.length;
+
+console.log(
+  `Clientes recuperados: ${clientesRecuperados.length}`
+);
+
+console.log(
+  `Clientes omitidos por tarea activa: ${clientesOmitidos}`
+);
+
+console.log(
+  `Clientes disponibles para análisis: ${clientes.length}`
+);
+if (clientes.length === 0) {
+  const duracion =
+    Date.now() - inicio;
+
+  console.log(
+    "No hay clientes disponibles para analizar."
+  );
+
+  console.log(
+    "=========================================="
+  );
+
+  return {
+    ok: true,
+
+    resumen: {
+      clientes_recuperados:
+        clientesRecuperados.length,
+
+      clientes_omitidos_tarea_activa:
+        clientesOmitidos,
+
+      clientes_analizados: 0,
+
+      tareas_creadas: 0,
+      tareas_comercial_creadas: 0,
+      tareas_vendedor_creadas: 0,
+      tareas_vendedor_existentes: 0,
+
+      oportunidades_altas: 0,
+      oportunidades_medias: 0,
+      oportunidades_bajas: 0,
+
+      vendedores_ejecutados: 0,
+      vendedor_sin_tarea: 0,
+      errores_vendedor: 0,
+
+      duracion_ms: duracion,
+    },
+
+    agentes: {
+      comercial: null,
+      vendedor: [],
+    },
+  };
+}
   
     const memorias =
       await obtenerMemoriasClientes(
@@ -162,22 +322,55 @@ import {
         ?.oportunidades ?? [];
   
         const oportunidadesPrioritarias =
-        oportunidades
-          .filter((oportunidad) => {
-      
-            if (!esOportunidadPrioritaria(oportunidad)) {
-              return false;
-            }
-      
-            return Number(oportunidad.score || 0) >= 70;
-      
-          })
-          .sort(
-            (a, b) =>
-              Number(b.score || 0) -
-              Number(a.score || 0)
-          )
-          .slice(0, limiteVendedor);
+  oportunidades
+    .map((oportunidad) => {
+      const cliente =
+        clientes.find(
+          (item) =>
+            Number(item.id) ===
+            Number(
+              oportunidad.cliente_id
+            )
+        );
+
+      const memoria =
+        memorias.find(
+          (item) =>
+            Number(item.cliente_id) ===
+            Number(
+              oportunidad.cliente_id
+            )
+        );
+
+      const agenteDestino =
+        determinarAgenteDestino({
+          cliente,
+          oportunidad,
+          historial:
+            memoria?.historial ?? [],
+        });
+
+      return {
+        ...oportunidad,
+
+        agente_destino:
+          agenteDestino,
+      };
+    })
+    .filter(
+      (oportunidad) =>
+        oportunidad.agente_destino ===
+        "Vendedor"
+    )
+    .sort(
+      (a, b) =>
+        Number(b.score || 0) -
+        Number(a.score || 0)
+    )
+    .slice(
+      0,
+      limiteVendedor
+    );
   
     console.log(
       `Oportunidades para Vendedor IA: ${oportunidadesPrioritarias.length}`
@@ -352,7 +545,10 @@ import {
   
       resumen: {
         clientes_recuperados:
-          clientes.length,
+  clientesRecuperados.length,
+
+clientes_omitidos_tarea_activa:
+  clientesOmitidos,
   
         clientes_analizados:
           resultadoComercial

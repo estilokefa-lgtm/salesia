@@ -10,7 +10,14 @@ import { crearTareaIA } from "./services/tareasService.js";
 import tareasRouter from "./routes/tareasRouter.js";
 import vendedorRoutes from "./routes/vendedorRoutes.js";
 import orquestadorRoutes from "./routes/orquestadorRoutes.js";
+import {
+  ejecutarOrquestador,
+} from "./agents/orquestador/orquestadorAgent.js";
+import {
+  iniciarScheduler,
+} from "./scheduler/scheduler.js";
 import {completarTareaIA,} from "./services/tareasService.js";
+import whatsappRouter from "./routes/whatsappRouter.js";
 
 
 dotenv.config();
@@ -65,6 +72,10 @@ app.use(
 app.use(
   "/api/orquestador",
   orquestadorRoutes
+);
+app.use(
+  "/api/whatsapp",
+  whatsappRouter
 );
 
 // =========================
@@ -124,4 +135,21 @@ app.listen(PORT, () => {
   console.log(
     `🚀 SalesIA API corriendo en http://localhost:${PORT}`
   );
+
+  iniciarScheduler({
+    intervaloMs:
+      5 * 60 * 1000,
+
+    ejecutar: async () => {
+      const resultado =
+        await ejecutarOrquestador({
+          limite: 100,
+        });
+
+      console.log(
+        "[Scheduler IA] Resultado:",
+        resultado.resumen
+      );
+    },
+  });
 });
