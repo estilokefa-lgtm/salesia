@@ -27,6 +27,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "https://salesia-hghwgleqg-danielk-s-projects.vercel.app",
+  "https://salesia-six.vercel.app",
 ];
 
 app.use(
