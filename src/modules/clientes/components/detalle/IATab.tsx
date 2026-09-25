@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Cliente } from "../../types";
 import {obtenerConversacionesCliente,} from "../../services/iaConversaciones";
-
+import { API_BASE } from "../../../../config/api";
 interface Props {
   cliente: Cliente;
 }
@@ -120,8 +120,9 @@ async function cargarHistorial() {
       setCopiado(false);
 
       const response = await fetch(
-        "http://localhost:3001/api/vendedor/generar-mensaje",
-        {
+        `${API_BASE}/vendedor/generar-mensaje`,
+  {
+        
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -167,8 +168,9 @@ async function cargarHistorial() {
       setCopiado(false);
   
       const response = await fetch(
-        "http://localhost:3001/api/vendedor/ejecutar",
-        {
+        `${API_BASE}/vendedor/ejecutar`,
+  {
+        
           method: "POST",
           headers: {
             "Content-Type":

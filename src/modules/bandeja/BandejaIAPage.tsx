@@ -11,7 +11,7 @@ import {
 import {
   supabase,
 } from "../../lib/supabase";
-
+import { API_BASE } from "../../config/api";
 type Prioridad =
   | "Alta"
   | "Media"
@@ -138,8 +138,7 @@ type FiltroEstado =
   | "Realizada"
   | "Pospuesta";
 
-const API_URL =
-  "http://localhost:3001/api";
+const API_URL = API_BASE;
 
 export default function BandejaIAPage() {
   const [tareas, setTareas] =

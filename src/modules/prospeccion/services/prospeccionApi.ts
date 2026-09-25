@@ -1,11 +1,12 @@
 import type { Cliente } from "../../clientes/types";
+import { API_BASE } from "../../../config/api";
 
 export async function buscarEmpresas(params: {
   rubro: string;
   ciudad: string;
   cantidad: number;
 }): Promise<Cliente[]> {
-  const response = await fetch("http://localhost:3001/api/buscar-empresas", {
+  const response = await fetch(`${API_BASE}/buscar-empresas`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -21,19 +22,17 @@ export async function buscarEmpresas(params: {
 
   return data.resultados;
 }
+
 export async function enriquecerContacto(web: string) {
-  const response = await fetch(
-    "http://localhost:3001/api/enriquecer-contacto",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        web,
-      }),
-    }
-  );
+  const response = await fetch(`${API_BASE}/enriquecer-contacto`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      web,
+    }),
+  });
 
   const data = await response.json();
 

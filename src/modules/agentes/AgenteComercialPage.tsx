@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { API_BASE } from "../../config/api";
 type Resumen = {
   clientes_analizados: number;
   oportunidades_altas: number;
@@ -39,7 +39,7 @@ export default function AgenteComercialPage() {
       setError("");
 
       const response = await fetch(
-        "http://localhost:3001/api/comercial/analizar-cartera",
+  `${API_BASE}/comercial/analizar-cartera`,
         {
           method: "POST",
           headers: {
