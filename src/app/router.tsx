@@ -11,63 +11,72 @@ import AgenteComercialPage from "../modules/agentes/AgenteComercialPage";
 import AgentesPage from "../modules/agentes/AgentesPage";
 import BandejaIAPage from "../modules/bandeja/BandejaIAPage";
 
+import LoginPage from "../modules/auth/LoginPage";
+import ProtectedRoute from "../modules/auth/ProtectedRoute";
 
 export default function AppRouter() {
-
   return (
-
     <BrowserRouter>
-
       <Routes>
 
+        {/* LOGIN - ACCESO PUBLICO */}
+        <Route
+          path="/login"
+          element={<LoginPage />}
+        />
 
-        <Route element={<MainLayout />}>
-
+        {/* SALESIA - ACCESO PROTEGIDO */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }
+        >
 
           <Route
             path="/"
             element={<DashboardPage />}
           />
 
-
           <Route
             path="/clientes"
             element={<ClientesPage />}
           />
-
 
           <Route
             path="/productos"
             element={<ProductosPage />}
           />
 
-
           <Route
             path="/ventas"
             element={<VentasPage />}
           />
-          <Route path="/prospeccion" element={<ProspeccionPage />} />
-          <Route
-  path="/agentes/comercial"
-  element={<AgenteComercialPage />}
-/>
-<Route
-  path="/agentes"
-  element={<AgentesPage />}
-/>
-<Route
-  path="/bandeja"
-  element={<BandejaIAPage />}
-/>
 
+          <Route
+            path="/prospeccion"
+            element={<ProspeccionPage />}
+          />
+
+          <Route
+            path="/agentes"
+            element={<AgentesPage />}
+          />
+
+          <Route
+            path="/agentes/comercial"
+            element={<AgenteComercialPage />}
+          />
+
+          <Route
+            path="/bandeja"
+            element={<BandejaIAPage />}
+          />
 
         </Route>
 
-
       </Routes>
-
-
     </BrowserRouter>
-
   );
 }
