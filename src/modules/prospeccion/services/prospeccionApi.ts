@@ -1,34 +1,30 @@
 import type { Cliente } from "../../clientes/types";
-import { API_BASE } from "../../../config/api";
+import { apiFetch } from "../../../config/apiFetch";
 
 export async function buscarEmpresas(params: {
   rubro: string;
   ciudad: string;
   cantidad: number;
 }): Promise<Cliente[]> {
-  const response = await fetch(`${API_BASE}/buscar-empresas`, {
+  const response = await apiFetch("/buscar-empresas", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(params),
   });
 
   const data = await response.json();
 
   if (!response.ok || !data.ok) {
-    throw new Error(data.error || "Error buscando empresas");
+    throw new Error(
+      data.error || "Error buscando empresas"
+    );
   }
 
   return data.resultados;
 }
 
 export async function enriquecerContacto(web: string) {
-  const response = await fetch(`${API_BASE}/enriquecer-contacto`, {
+  const response = await apiFetch("/enriquecer-contacto", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify({
       web,
     }),

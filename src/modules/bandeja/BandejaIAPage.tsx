@@ -8,10 +8,11 @@ import {
   Link,
 } from "react-router-dom";
 
+
 import {
   supabase,
 } from "../../lib/supabase";
-import { API_BASE } from "../../config/api";
+import { apiFetch } from "../../config/apiFetch";
 type Prioridad =
   | "Alta"
   | "Media"
@@ -138,7 +139,6 @@ type FiltroEstado =
   | "Realizada"
   | "Pospuesta";
 
-const API_URL = API_BASE;
 
 export default function BandejaIAPage() {
   const [tareas, setTareas] =
@@ -255,8 +255,8 @@ export default function BandejaIAPage() {
       setError("");
 
       const response =
-        await fetch(
-          `${API_URL}/tareas/${tarea.id}/estado`,
+        await apiFetch(
+  `/tareas/${tarea.id}/estado`,
           {
             method: "PATCH",
             headers: {
@@ -324,8 +324,8 @@ export default function BandejaIAPage() {
       setError("");
 
       const response =
-        await fetch(
-          `${API_URL}/vendedor/ejecutar-tarea/${tareaId}`,
+        await apiFetch(
+  `/vendedor/ejecutar-tarea/${tareaId}`,
           {
             method: "POST",
             headers: {
@@ -386,8 +386,8 @@ export default function BandejaIAPage() {
   ) {
     try {
       const response =
-        await fetch(
-          `${API_URL}/tareas/${tareaId}/completar`,
+        await apiFetch(
+  `/tareas/${tareaId}/completar`,
           {
             method: "PATCH",
             headers: {
@@ -442,8 +442,8 @@ export default function BandejaIAPage() {
   ) {
     try {
       const response =
-        await fetch(
-          `${API_URL}/tareas/${tareaId}/estado`,
+  await apiFetch(
+    `/tareas/${tareaId}/estado`,
           {
             method: "PATCH",
             headers: {

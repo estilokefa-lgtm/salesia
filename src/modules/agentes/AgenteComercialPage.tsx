@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { API_BASE } from "../../config/api";
+import { apiFetch } from "../../config/apiFetch";
 type Resumen = {
   clientes_analizados: number;
   oportunidades_altas: number;
@@ -38,15 +38,12 @@ export default function AgenteComercialPage() {
       setLoading(true);
       setError("");
 
-      const response = await fetch(
-  `${API_BASE}/comercial/analizar-cartera`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await apiFetch(
+  "/comercial/analizar-cartera",
+  {
+    method: "POST",
+  }
+);
 
       const data: RespuestaAgente = await response.json();
 

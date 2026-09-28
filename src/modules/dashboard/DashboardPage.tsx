@@ -1,7 +1,7 @@
 import Card from "../../components/ui/Card";
 import { useState } from "react";
 import Button from "../../components/ui/Button";
-import { API_BASE } from "../../config/api";
+import { apiFetch } from "../../config/apiFetch";
 export default function DashboardPage() {
   const [ejecutando, setEjecutando] =
   useState(false);
@@ -14,12 +14,12 @@ async function ejecutarOrquestador() {
     setEjecutando(true);
 
     const response =
-      await fetch(
-        `${API_BASE}/orquestador/ejecutar`,
-        {
-          method: "POST",
-        }
-      );
+  await apiFetch(
+    "/orquestador/ejecutar",
+    {
+      method: "POST",
+    }
+  );
 
     const data =
       await response.json();

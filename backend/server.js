@@ -18,7 +18,7 @@ import {
 } from "./scheduler/scheduler.js";
 import {completarTareaIA,} from "./services/tareasService.js";
 import whatsappRouter from "./routes/whatsappRouter.js";
-
+import { requireAuth } from "./middleware/requireAuth.js";
 
 dotenv.config();
 
@@ -81,7 +81,20 @@ app.get("/", (_req, res) => {
     message: "SalesIA API funcionando",
   });
 });
+// =========================
+// PROTECCION API
+// =========================
 
+app.use("/api", (req, res, next) => {
+  const esWebhookWhatsApp =
+    req.path === "/whatsapp/webhook";
+
+  if (esWebhookWhatsApp) {
+    return next();
+  }
+
+  return requireAuth(req, res, next);
+});
 // =========================
 // RUTAS
 // =========================

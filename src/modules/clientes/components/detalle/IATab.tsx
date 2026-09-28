@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Cliente } from "../../types";
 import {obtenerConversacionesCliente,} from "../../services/iaConversaciones";
-import { API_BASE } from "../../../../config/api";
+import { apiFetch } from "../../../../config/apiFetch";
 interface Props {
   cliente: Cliente;
 }
@@ -119,8 +119,8 @@ async function cargarHistorial() {
       setRespuesta(null);
       setCopiado(false);
 
-      const response = await fetch(
-        `${API_BASE}/vendedor/generar-mensaje`,
+      const response = await apiFetch(
+  "/vendedor/generar-mensaje",
   {
         
           method: "POST",
@@ -167,8 +167,8 @@ async function cargarHistorial() {
       setRespuesta(null);
       setCopiado(false);
   
-      const response = await fetch(
-        `${API_BASE}/vendedor/ejecutar`,
+      const response = await apiFetch(
+  "/vendedor/ejecutar",
   {
         
           method: "POST",
